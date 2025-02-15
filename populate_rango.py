@@ -1,8 +1,9 @@
 import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 
-                      'tango_with_django_project.settings')
-
 import django
+import random
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tango_with_django_project.settings')
+
 django.setup()
 from rango.models import Category, Page
 
@@ -29,16 +30,17 @@ def populate():
             'Other Frameworks': {'pages': other_pages, 'views': 32, 'likes': 16}
     }
     
-    # Go through cats dictionary, add each category then add all associated pages for that category
+    # Populate categories and pages
     for cat, cat_data in cats.items():
         c = add_cat(cat, cat_data['views'], cat_data['likes'])
         for p in cat_data['pages']:
-            add_page(c, p['title'], p['url'])
+            # Assign a random views count (greater than 0)
+            add_page(c, p['title'], p['url'], views=random.randint(1, 100))
             
-    # Print out added categories
+    # Print out added categories and pages
     for c in Category.objects.all():
         for p in Page.objects.filter(category=c):
-            print(f'-{c}: {p}')
+            print(f'-{c}: {p} ({p.views} views)')
     
 def add_page(cat, title, url, views=0):
     p = Page.objects.get_or_create(category=cat, title=title)[0]
